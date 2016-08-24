@@ -12,8 +12,7 @@ COPY $config_file /etc/shiny-server/shiny-server.conf
 COPY $app_folder /srv/shiny-server/$app_folder
 
 # install necessary R packages
-WORKDIR $app_folder
-RUN sudo su - -c "R -e \"automagic::automagic()\""
+RUN sudo su - -c "R -e \"setwd('/srv/shiny-server/$app_folder'); automagic::automagic()\""
 
 # start it
 CMD exec shiny-server >> /var/log/shiny-server.log 2>&1
