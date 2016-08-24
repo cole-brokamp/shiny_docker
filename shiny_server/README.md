@@ -9,7 +9,7 @@ In addition to R and Shiny Server, this image contains the R packages `devtools`
 ## Building
 
 **Build locally:**
-The `Dockerfile` inside the `shiny_server` folder will create a docker image with R Shiny Server (including some geospatial packages). To build the image locally, use `docker build -t colebrokamp/shiny ./shiny_server`.
+The `Dockerfile` inside the `shiny_server` folder will create a docker image with R Shiny Server (including some geospatial packages). To build the image locally, use `docker build -t colebrokamp/shiny ./shiny_server`. Commiting any changes to this file on the GitHub repo will trigger a rebuild of the image on DockerHub.
 
 **Pull from DockerHub:**
 Alternatively, pull the image from DockerHub: `docker pull colebrokamp/shiny`.
