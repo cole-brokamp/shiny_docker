@@ -22,6 +22,8 @@ To run the app, use `docker run -d -p 3838:3838 cole/hello_shiny` and open `loca
 
 Make sure that the shiny application folder is in your current working directory. Copy the Dockerfile from this repo to the current working directory.  Build and run as in the above example, replacing `hello_shiny` with the name of your app folder. Supplying the build arg `--build-arg app_folder=<app-folder>` will copy `<app-folder>` to `/srv/shiny-server` and automatically be served.
 
+Alternatively, change your working directory to inside the shiny application folder. Copy the Dockerfile here and build with `docker build --build-arg app_folder=$PWD -t cole/<app-name> .` This will copy the current working directory to the image.
+
 #### Shiny Configuration File
 
 By default, a simple `shiny-server.conf` is downloaded from this github repository (`example_shiny-server.conf`) and copied to `/etc/shiny-server/shiny-server.conf`. To use a custom configuration file, include a file in the app directory called `shiny-server.conf`. If this file is present, it will be copied to `/etc/shiny-server/shiny-server.conf` instead of downloading and using the example configuration file. See more details on server configuration [here](http://docs.rstudio.com/shiny-server/#server-management).
@@ -39,3 +41,32 @@ docker build \
 ```
 
 Note that Docker *requires* a default value for any build args so not supplying `app_name` will cause the build to fail. However, predefined build args, like `http_proxy` and `https_proxy`, are not required and do not have default values.
+
+## Deploying to Server
+
+For even further automation, use a bash script for automatic deployment with building done on the server side.
+
+```
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+if [[ $# < 1 ]]; then
+        echo "copies shiny app inside the current folder to server"
+        echo "dockerizes, builds, and runs"
+        echo "usage: docker_shiny_push"
+        exit 0
+fi
+
+af=`basename $PWD`
+scp -r $PWD <server>:~
+ssh -q -T <server> > /dev/null << HERE
+      cd ~/$af
+      wget https://raw.githubusercontent.com/cole-brokamp/shiny_docker/master/Dockerfile -q -O ./Dockerfile
+      docker build --build-arg app_folder=$PWD -t cole/$af .
+      docker run -d -p 3838:3838 cole/$af
+HERE
+
+echo "dockerized shiny app is now running"
+
+```
