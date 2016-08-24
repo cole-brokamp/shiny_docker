@@ -51,7 +51,7 @@ For even further automation, use a bash script for automatic deployment with bui
 set -euo pipefail
 IFS=$'\n\t'
 
-if [[ $# < 1 ]]; then
+if [[ $# > 1 ]]; then
         echo "copies shiny app inside the current folder to server"
         echo "dockerizes, builds, and runs"
         echo "usage: docker_shiny_push"
