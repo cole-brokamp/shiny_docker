@@ -1,4 +1,4 @@
-from colebrokamp/shiny:latest
+FROM colebrokamp/shiny:latest
 
 MAINTAINER "Cole Brokamp" cole.brokamp@gmail.com
 

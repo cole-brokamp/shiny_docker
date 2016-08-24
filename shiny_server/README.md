@@ -1,5 +1,8 @@
 # Docker Shiny Server Image
 
+[![](https://images.microbadger.com/badges/image/colebrokamp/shiny.svg)](https://microbadger.com/images/colebrokamp/shiny)
+[![](https://images.microbadger.com/badges/version/colebrokamp/shiny.svg)](http://microbadger.com/images/colebrokamp/shiny)
+
 To dockerize your R Shiny application, the `colebrokamp/shiny` docker image must be available. This image serves as a starting point and reduces redundant rebuilds everytime a dockerfile is built for a new shiny app. This image will automatically be pulled from DockerHub if you build your own image from a Dockerfile that includes `from colebrokamp/shiny:latest`. If this is the case, you can skip how to build locally or pull from DockerHub with no problems. These instructions are aimed at users who wish to customize the `colebrokamp/shiny` docker image.
 
 ## Image Contents
