@@ -35,8 +35,7 @@ Besides the required `app_folder` argument, other `--build-args` [are available]
 ```
 docker build \
     --build-arg app_name=hello_shiny \
-    --build-arg http_proxy=http://srv-sysproxy:ieQu3nei@bmiproxyp.chmcres.cchmc.org:80 \
-    --build-arg https_proxy=https://srv-sysproxy:ieQu3nei@bmiproxyp.chmcres.cchmc.org:80 \
+    --build-arg http_proxy=<PROXY-URL> \
     -t colebrokamp/hello_shiny .
 ```
 
@@ -44,29 +43,22 @@ Note that Docker *requires* a default value for any build args so not supplying 
 
 ## Deploying to Server
 
-For even further automation, use a bash script for automatic deployment with building done on the server side.
+These instructions are mainly aimed at my personal use for deploying to an internal server with some strict proxy access rules.
 
-```
-#!/bin/bash
-set -euo pipefail
-IFS=$'\n\t'
+### Send Image to Server
 
-if [[ $# > 1 ]]; then
-        echo "copies shiny app inside the current folder to server"
-        echo "dockerizes, builds, and runs"
-        echo "usage: docker_shiny_push"
-        exit 0
-fi
+Once the docker shiny app is built locally, transfer the image to the server via SSH, bzipping the content on the fly:
 
-af=`basename $PWD`
-scp -r $PWD <server>:~
-ssh -q -T <server> > /dev/null << HERE
-      cd ~/$af
-      wget https://raw.githubusercontent.com/cole-brokamp/shiny_docker/master/Dockerfile -q -O ./Dockerfile
-      docker build --build-arg app_folder=$PWD -t cole/$af .
-      docker run -d -p 3838:3838 cole/$af
-HERE
+`docker save <image> | bzip2 | pv | ssh cchmc_geocore_dev 'bunzip | docker load'`
 
-echo "dockerized shiny app is now running"
+(protip: use `pv -s <estimated size>` to get ETA and percent progress, but how to estimate size of compressed image??)
 
-```
+### Run Image on server
+
+Run the image, using the current system proxy variables so that R can use them inside the container too. (To export proxy variables, run `. ./proxy.sh` on the server.
+
+`docker run -d --name <NAME> -p 8080:3838 -e http_proxy-e https_proxy <IMAGE-ID>`
+
+The image will be available at `<URL>:8080/<app_folder>`. 
+
+To test it without public access, use `ssh -N -L localhost:3838:localhost:8080 cchmc_geocore_dev` to map port 8080 on the server to local port 3838. Then app will be available at `localhost:3838/<app_folder>`

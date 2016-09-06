@@ -3,3 +3,5 @@ shiny-server.conf
 TODO
 example_build.sh
 *.Rhistory
+docker_shiny_push*
+*.html
