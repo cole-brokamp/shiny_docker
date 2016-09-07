@@ -3,10 +3,11 @@ FROM colebrokamp/shiny:latest
 MAINTAINER "Cole Brokamp" cole.brokamp@gmail.com
 
 # build args
-ARG app_folder
+ARG app_folder=${PWD##*/}
 
-# copy app
-COPY $app_folder /srv/shiny-server/$app_folder
+# copy app contents to app_folder
+RUN mkdir /srv/shiny-server/$app_folder
+COPY * /srv/shiny-server/$app_folder
 
 # copy config file if it exists
 RUN if [ -f /srv/shiny-server/$app_folder/shiny-server.conf ]; then (>&2 echo "Using config file inside app directory") && cp /srv/shiny-server/$app_folder/shiny-server.conf /etc/shiny-server/shiny-server.conf; fi

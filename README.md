@@ -4,25 +4,27 @@
 
 ## Dockerizing Your Shiny Application
 
-Using this method, every shiny docker image is built from the same Dockerfile in the `shiny_docker` github repository. Application specific code is copied to the image using a build argument. The Dockerfile uses `colebrokamp/shiny` as a starting image and will be automatically pulled the first time that you build an image using this method. See the documentation accompanying the image on [DockerHub](https://hub.docker.com/r/colebrokamp/shiny/) for more details.
+Using this method, every shiny docker image is built from the same Dockerfile in the `shiny_docker` github repository. The working directory from where `docker build ...` is called is assumed to be the folder containing the R Shiny application and all content is copied to `/srv/shiny-server/<app_folder>` where `<app_folder>` is defined using a `--build-arg`. 
+
+The Dockerfile uses `colebrokamp/shiny` as a starting image and will be automatically pulled the first time that you build an image using this method. See the documentation accompanying the image on [DockerHub](https://hub.docker.com/r/colebrokamp/shiny/) for more details.
 
 ### Example
 
 This example builds a docker image for the shiny app in the directory `hello_shiny`. Make sure to clone the repository so the application folder and docker resources are available if you want to try the example yourself.
 
 ```
+git clone https://github.com/cole-brokamp/shiny_docker
+cd shiny_docker/hello_shiny
 docker build --build-arg app_folder=hello_shiny -t cole/hello_shiny .
 ```
 
-Behind the scenes, the docker daemon copies the app directory to `/srv/shiny-server/` and the `automagic` R package scans the code inside the directory for necessary packages and installs them.
+Behind the scenes, the `automagic` R package scans the code inside the directory for necessary packages and installs them when building the Docker image so that no other customization should be necessary.
 
 To run the app, use `docker run -d -p 3838:3838 cole/hello_shiny` and open `localhost:3838/hello_shiny`. Use `--rm` instead of `-d` if you would like the container to run in the foreground and be removed after it is stopped.
 
 ### Use With Your Own Shiny App
 
-Make sure that the shiny application folder is in your current working directory. Copy the Dockerfile from this repo to the current working directory.  Build and run as in the above example, replacing `hello_shiny` with the name of your app folder. Supplying the build arg `--build-arg app_folder=<app-folder>` will copy `<app-folder>` to `/srv/shiny-server` and automatically be served.
-
-Alternatively, change your working directory to inside the shiny application folder. Copy the Dockerfile here and build with `docker build --build-arg app_folder=$PWD -t cole/<app-name> .` This will copy the current working directory to the image.
+Make sure that the current working directory is your shiny application folder. Copy the Dockerfile from this repo to the current working directory (`wget https://raw.githubusercontent.com/cole-brokamp/shiny_docker/master/Dockerfile -q -O ./Dockerfile`).  Build and run as in the above example, replacing `hello_shiny` with the desired name of your app. Supplying the build arg `--build-arg app_folder=<app-folder>` will copy the contents of the working directory (i.e. everything needed for the Shiny app) to `/srv/shiny-server/<app-folder>` and automatically be served.
 
 #### Shiny Configuration File
 
