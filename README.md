@@ -1,7 +1,7 @@
 # shiny_docker
 
 [![](https://images.microbadger.com/badges/image/colebrokamp/shiny.svg)](https://microbadger.com/images/colebrokamp/shiny)
-[![](https://images.microbadger.com/badges/version/colebrokamp/shiny.svg)](http://microbadger.com/images/colebrokamp/shiny)
+[![](https://images.microbadger.com/badges/version/colebrokamp/shiny.svg)](https://hub.docker.com/r/colebrokamp/shiny/)
 
 > A robust method to automatically dockerize your R Shiny Application
 
