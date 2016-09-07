@@ -1,7 +1,6 @@
 shiny-server.conf
 .DS_Store
 TODO
-example_build.sh
 *.Rhistory
 docker_shiny_push*
 *.html
