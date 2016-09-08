@@ -58,18 +58,34 @@ Running this image won't start shiny server because it has no `ENTRYPOINT` or `C
 
 These instructions are mainly aimed at my personal use for deploying to an internal server with some strict proxy access rules.
 
-#### Automated Deployment Script
+#### Automated Deployment Scripts
 
-Use [docker_shiny_push.sh](docker_shiny_push.sh) to automate the entire process:
+Use the scripts in the [deployment_scripts](deployment_scripts) folder to automate the entire process:
 
-- make Dockerfile
-- copy custom `shiny-server.conf` file
-- make app name based on name of current folder
-- build the image as `cole/<app-folder>:latest`
-- save the docker image and pipe it to the remote server with a progress bar
-- run image on an unused port after exporting `http_proxy` variables
-- return image, container, and port information
-- remove local image and cleanup
+`docker_shiny_build.sh`:
+- makes Dockerfile
+- copies custom `shiny-server.conf` file
+- makes app name based on name of current folder
+- builds the image as `cole/<app-folder>:latest`
+- exports `af` and `did` to the shell as the name of the app and the docker image id, respectively
+
+`docker_shiny_push.sh <ssh-server-name>`:
+- depends on `af` and `did`
+- saves the docker image
+- sends it to the specified remote server with a progress bar
+- exports `SERVER` as which server it was told to send to
+
+`docker_shiny_run.sh <virtual-host-name>`:
+- depends on `SERVER`
+- exports proxy variables in shell on server
+- runs image on a random, unused port using proxy variables
+- also supplies `VIRTUAL_HOST` based on `<virtual-host-name>` for automated nginx reverse proxy on docker
+- returns image, container, port, and virtual hostname information
+
+`docker_shiny_clean.sh`:
+- removes the local image
+- runs `docker_clean`
+- unsets `af`, `did`, and `SERVER`
 
 #### Viewing the Application
 
