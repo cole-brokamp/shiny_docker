@@ -21,14 +21,14 @@ Several things happen when this base image is used to generate a dockerized shin
 
 **Installing Necessary R Packages**: The `automagic` R package ([www.github.com/cole-brokamp/automagic](www.github.com/cole-brokamp/automagic)) scans the code inside the directory for necessary packages and installs them when building the Docker image so that no other customization should be necessary.
 
-**Shiny Server Configuration**: By default, a simple `shiny-server.conf` is downloaded from this github repository (`example_shiny-server.conf`) and copied to `/etc/shiny-server/shiny-server.conf`. To use a custom configuration file, include a file in the app directory called `shiny-server.conf`. If this file is present, it will be copied to `/etc/shiny-server/shiny-server.conf` instead of downloading and using the example configuration file. See more details on server configuration [here](http://docs.rstudio.com/shiny-server/#server-management).
+**Shiny Server Configuration**: By default, a simple `shiny-server.conf` is downloaded from this github repository (`example_shiny-server.conf`) and copied to `/etc/shiny-server/shiny-server.conf`. This file has two important differences from the default config file installed by shiny:  (1) It runs all R processes as the user `docker` instead of `shiny` and (2) it only serves one application (`/srv/shiny-server/app`) instead of hosting the entire directory. To use a custom configuration file, include a file in the app directory called `shiny-server.conf`. If this file is present, it will be copied to `/etc/shiny-server/shiny-server.conf` instead of downloading and using the example configuration file. See more details on server configuration [here](http://docs.rstudio.com/shiny-server/#server-management).
 
 ## Dockerizing Your Shiny Application
 
-Create a Dockerfile inside the shiny app directory that contains only:
+Create a Dockerfile inside the shiny app directory that contains only `FROM colebrokamp/shiny:latest`:
 
 ```
-FROM colebrokamp/shiny:latest
+echo "FROM colebrokamp/shiny:latest" > Dockerfile
 ```
 
 Build your app with:
@@ -36,47 +36,29 @@ Build your app with:
 ```
 docker build -t <app-name> .
 ```
-Create a docker container running the application with `docker run -d -p 3838:3838 <app-name>`. Open `localhost:3838/app` to view the app.
+Create a docker container running the application with `docker run -d -p 3838:3838 <app-name>`. Open `localhost:3838` to view the app. Note that only one docker container can be bound to a single port, so if using multiple containers to run multiple shiny apps at the same time, you will need to bind to host port other than 3838.
 
 ## Example Usage
 
-This example builds a docker image for the shiny app in the directory `hello_shiny`. Make sure to clone the repository so the application folder and docker resources are available if you want to try the example yourself.
+This example builds a docker image for the shiny app in the directory `hello_shiny`. If you want to try the example yourself, clone the repository or download the example app folder.
 
 ```
 git clone https://github.com/cole-brokamp/shiny_docker
 cd shiny_docker/hello_shiny
+echo "FROM colebrokamp/shiny:latest" > Dockerfile
 docker build -t hello_shiny .
 ```
-
-Run the example shiny application with `docker run -d -p 3838:3838 hello_shiny` and visit `localhost:3838/app` to view the application.
+Run the example shiny application with `docker run -d -p 3838:3838 hello_shiny` and visit `localhost:3838` to view the application.
 
 ## Test Running the Image
 
-Running this image won't start shiny server because it has no `ENTRYPOINT` or `CMD` as it was intended to be imported for use in other images. To test that it is working, run a container with `docker run --rm -p 3838:3838 colebrokamp/shiny bash -c "exec shiny-server"` and visit `localhost:38383` in your browser.
+Running this image won't start shiny server because it has no `ENTRYPOINT` or `CMD` as it was intended to be imported for use in other images. To test that it is working, run a container with `docker run --rm -p 3838:3838 colebrokamp/shiny bash -c "exec shiny-server"` and visit `localhost:3838` in your browser.
 
 ## Deploying to Server
 
 These instructions are mainly aimed at my personal use for deploying to an internal server with some strict proxy access rules.
 
-### Send Image to Server
-
-Once the docker shiny app is built locally, transfer the image to the server via SSH, bzipping the content on the fly:
-
-`docker save <image> | bzip2 | pv | ssh cchmc_geocore_dev 'bunzip | docker load'`
-
-(protip: use `pv -s <estimated size>` to get ETA and percent progress, but how to estimate size of compressed image??)
-
-### Run Image on server
-
-Run the image, using the current system proxy variables so that R can use them inside the container too. (To export proxy variables, run `. ./proxy.sh` on the server.)
-
-`docker run -d --name <NAME> -p 8080:3838 -e http_proxy-e https_proxy <IMAGE-ID>`
-
-The image will be available at `<URL>:8080/app`.
-
-To test it without public access, use `ssh -N -L localhost:3838:localhost:8080 cchmc_geocore_dev` to map port 8080 on the server to local port 3838. Then app will be available at `localhost:3838/<app_folder>`
-
-### Automated Deployment Script
+#### Automated Deployment Script
 
 Use [docker_shiny_push.sh](docker_shiny_push.sh) to automate the entire process:
 
@@ -88,3 +70,7 @@ Use [docker_shiny_push.sh](docker_shiny_push.sh) to automate the entire process:
 - run image on an unused port after exporting `http_proxy` variables
 - return image, container, and port information
 - remove local image and cleanup
+
+#### Viewing the Application
+
+To test the app without public access, use `ssh -N -L localhost:3838:localhost:<PORT> <SERVER>` to map port <PORT> on the server to local port 3838. Then app will be available at `localhost:3838`
