@@ -9,9 +9,11 @@
 
 #### Image Contents
 
-The Dockerfile here is used to build the `colebrokamp/shiny` image. It contains R and Shiny Server.  It also contains the R packages `shiny` and `rmarkdown`, my custom R package (`github.com/cole-brokamp/CB`); and the geospatial R packages `rgeos` and `rgdal` (including the `gdal`, `geos`, and `proj4` software libraries). `cole-brokamp/automagic` is also included for automatic installation of required R packages.
+The Dockerfile here is used to build the `colebrokamp/shiny` image. It contains R and Shiny Server.  It also contains the R packages `shiny` and `rmarkdown`, my custom R package (`github.com/cole-brokamp/CB`); and the 
+geospatial R packages `rgeos` and `rgdal` (including the `gdal`, `geos`, and `proj4` software libraries); `hadley/tidyverse` for the core tidyverse packages (ggplot2, dplyr, tidyr, readr, purrr, tibble, modelr, 
+broom, and more); and `cole-brokamp/automagic` is also included for automatic installation of required R packages.
 
-This image is fairly large (~1.4 GB) but will only need to be pulled the first time a Docker container is built using the image.  Alternatively, pull the image from DockerHub ahead of time with `docker pull colebrokamp/shiny`.
+This image is fairly large but will only need to be pulled the first time a Docker container is built using the image.  Alternatively, pull the image from DockerHub ahead of time with `docker pull colebrokamp/shiny`.
 
 #### How It Works
 

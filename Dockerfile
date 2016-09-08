@@ -49,7 +49,8 @@ RUN echo 'options(repos=c(CRAN = "https://cran.rstudio.com/"), download.file.met
 RUN sudo su - -c "R -e \"install.packages(c('devtools','shiny','rmarkdown','pacman'))\"" \
   && sudo su - -c "R -e \"devtools::install_github('cole-brokamp/CB')\"" \
   && sudo su - -c "R -e \"devtools::install_github('cole-brokamp/automagic')\"" \
-  && sudo su - -c "R -e \"devtools::install_github('hoxo-m/githubinstall')\""
+  && sudo su - -c "R -e \"devtools::install_github('hoxo-m/githubinstall')\"" \
+  && sudo su - -c "R -e \"devtools::install_github('hadley/tidyverse')\""
 
 # Download and install latest version of shiny server
 RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/VERSION -O "version.txt" && \
