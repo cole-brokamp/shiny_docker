@@ -9,8 +9,8 @@
 
 #### Image Contents
 
-The Dockerfile here is used to build the `colebrokamp/shiny` image. It contains R and Shiny Server.  It also contains the R packages `shiny` and `rmarkdown`, my custom R package (`github.com/cole-brokamp/CB`); and the 
-geospatial R packages `rgeos` and `rgdal` (including the `gdal`, `geos`, and `proj4` software libraries); `hadley/tidyverse` for the core tidyverse packages (ggplot2, dplyr, tidyr, readr, purrr, tibble, modelr, 
+The Dockerfile here is used to build the `colebrokamp/shiny` image. It contains R and Shiny Server.  It also contains the R packages `shiny` and `rmarkdown`, my custom R package (`github.com/cole-brokamp/CB`); and the
+geospatial R packages `rgeos` and `rgdal` (including the `gdal`, `geos`, and `proj4` software libraries); `hadley/tidyverse` for the core tidyverse packages (ggplot2, dplyr, tidyr, readr, purrr, tibble, modelr,
 broom, and more); and `cole-brokamp/automagic` is also included for automatic installation of required R packages.
 
 This image is fairly large but will only need to be pulled the first time a Docker container is built using the image.  Alternatively, pull the image from DockerHub ahead of time with `docker pull colebrokamp/shiny`.
@@ -21,7 +21,7 @@ Several things happen when this base image is used to generate a dockerized shin
 
 **Application Code/Data**: The contents of the entire build context (i.e. the working directory) are copied to `/srv/shiny-server/app/`. Note that *all* the contents of the working directory are copied to the Docker daemon. To speed up the build time, keep only files necessary for the Shiny app alongside the Dockerfile in the working directory.
 
-**Installing Necessary R Packages**: The `automagic` R package ([www.github.com/cole-brokamp/automagic](www.github.com/cole-brokamp/automagic)) scans the code inside the directory for necessary packages and installs them when building the Docker image so that no other customization should be necessary.
+**Installing Necessary R Packages**: [`automagic`](www.github.com/cole-brokamp/automagic) scans the code inside the directory for necessary packages and installs them when building the Docker image so that no other customization should be necessary.
 
 **Shiny Server Configuration**: By default, a simple `shiny-server.conf` is downloaded from this github repository (`example_shiny-server.conf`) and copied to `/etc/shiny-server/shiny-server.conf`. This file has two important differences from the default config file installed by shiny:  (1) It runs all R processes as the user `docker` instead of `shiny` and (2) it only serves one application (`/srv/shiny-server/app`) instead of hosting the entire directory. To use a custom configuration file, include a file in the app directory called `shiny-server.conf`. If this file is present, it will be copied to `/etc/shiny-server/shiny-server.conf` instead of downloading and using the example configuration file. See more details on server configuration [here](http://docs.rstudio.com/shiny-server/#server-management).
 
