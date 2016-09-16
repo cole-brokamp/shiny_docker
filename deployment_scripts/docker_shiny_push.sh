@@ -9,9 +9,7 @@ if [[ $# < 1 ]]; then
         exit 0
 fi
 
-SERVER=$1
+export SERVER=$1
 
 # send to server and load it (use pv to get ETA and progress)
 docker save cole/${af}:latest | pv -w 80 -s `docker inspect -f '{{ .Size }}' $did` | ssh $SERVER 'docker load'
-
-export SERVER
