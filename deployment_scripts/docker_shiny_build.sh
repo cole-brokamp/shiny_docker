@@ -11,9 +11,6 @@ echo "FROM colebrokamp/shiny:latest" > Dockerfile
 cp /Users/cole/Documents/Biostatistics/_CB/shiny_docker/shiny-server.conf ./shiny-server.conf
 
 # get name based on folder
-export af=`basename ${PWD//+(*\/|\.*)}`
+af=`basename ${PWD//+(*\/|\.*)}`
 # build it
 docker build -t cole/${af}:latest .
-
-# get most recently built docker image id
-export did=`docker images -q cole/${af}:latest`

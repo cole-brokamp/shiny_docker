@@ -69,26 +69,17 @@ Use the scripts in the [deployment_scripts](deployment_scripts) folder to automa
 - copies custom `shiny-server.conf` file
 - makes app name based on name of current folder
 - builds the image as `cole/<app-folder>:latest`
-- exports `af` and `did` to the shell as the name of the app and the docker image id, respectively
 
 `docker_shiny_push.sh <ssh-server-name>`:
-- depends on `af` and `did`
 - saves the docker image
-- sends it to the specified remote server with a progress bar
-- exports `SERVER` as which server it was told to send to
+- sends it to my amazon shiny server with a progress bar
 
 `docker_shiny_run.sh <virtual-host-name>`:
-- depends on `SERVER`
 - exports proxy variables in shell on server
 - runs image on a random, unused port using proxy variables
 - also supplies `VIRTUAL_HOST` based on `<virtual-host-name>` for automated nginx reverse proxy on docker
-- returns image, container, port, and virtual hostname information
+- returns URL
 
 `docker_shiny_clean.sh`:
 - removes the local image
 - runs `docker_clean`
-- unsets `af`, `did`, and `SERVER`
-
-#### Viewing the Application
-
-To test the app without public access, use `ssh -N -L localhost:3838:localhost:<PORT> <SERVER>` to map port <PORT> on the server to local port 3838. Then app will be available at `localhost:3838`

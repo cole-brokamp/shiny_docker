@@ -12,10 +12,10 @@ fi
 VH=$1
 
 # set proxy env variables in shell and run image with them
-ssh -T $SERVER << HERE
+ssh -T amazon_shiny2 << HERE
       . ./proxy.sh
       docker run -d --name $af -e http_proxy -e https_proxy -e VIRTUAL_HOST=$VH.amazon-shiny.duckdns.org cole/${af}:latest
 HERE
 
 echo "proxied with the virtual host name"
-echo "$VH"
+echo "${VH}.amazon-shiny.duckdns.org"
