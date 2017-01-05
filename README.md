@@ -40,6 +40,8 @@ docker build -t <app-name> .
 ```
 Create a docker container running the application with `docker run -d -p 3838:3838 <app-name>`. Open `localhost:3838` to view the app. Note that only one docker container can be bound to a single port, so if using multiple containers to run multiple shiny apps at the same time, you will need to bind to host port other than 3838.
 
+*Note: the above process of dockerizing has been automated using  helper functions in automagic (https://github.com/cole-brokamp/automagic). Build, test, view, tag, and deploy to a registry all from inside R or R Studio!*
+
 ## Example Usage
 
 This example builds a docker image for the shiny app in the directory `hello_shiny`. If you want to try the example yourself, clone the repository or download the example app folder.
@@ -55,31 +57,3 @@ Run the example shiny application with `docker run -d -p 3838:3838 hello_shiny` 
 ## Test Running the Image
 
 Running this image won't start shiny server because it has no `ENTRYPOINT` or `CMD` as it was intended to be imported for use in other images. To test that it is working, run a container with `docker run --rm -p 3838:3838 colebrokamp/shiny bash -c "exec shiny-server"` and visit `localhost:3838` in your browser.
-
-## Deploying to Server
-
-These instructions are mainly aimed at my personal use for deploying to an internal server with some strict proxy access rules.
-
-#### Automated Deployment Scripts
-
-Use the scripts in the [deployment_scripts](deployment_scripts) folder to automate the entire process:
-
-`docker_shiny_build.sh`:
-- makes Dockerfile
-- copies custom `shiny-server.conf` file
-- makes app name based on name of current folder
-- builds the image as `cole/<app-folder>:latest`
-
-`docker_shiny_push.sh <ssh-server-name>`:
-- saves the docker image
-- sends it to my amazon shiny server with a progress bar
-
-`docker_shiny_run.sh <virtual-host-name>`:
-- exports proxy variables in shell on server
-- runs image on a random, unused port using proxy variables
-- also supplies `VIRTUAL_HOST` based on `<virtual-host-name>` for automated nginx reverse proxy on docker
-- returns URL
-
-`docker_shiny_clean.sh`:
-- removes the local image
-- runs `docker_clean`
