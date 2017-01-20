@@ -61,7 +61,7 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
     cp -R /usr/local/lib/R/site-library/shiny/examples/* /srv/shiny-server/
 
 ## install geo libraries and r packages
-RUN wget -O - https://raw.githubusercontent.com/cole-brokamp/bash_setup/master/install_geos_gdal_proj4_for_linux.sh | bash \
+RUN wget -O - https://raw.githubusercontent.com/cole-brokamp/dotfiles/master/install/install_geos_gdal_proj4_for_linux.sh | bash \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
