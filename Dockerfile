@@ -31,7 +31,8 @@ RUN apt-get update && apt-get install -y \
     libproj-dev libgdal-dev \
     libxml2-dev libxt-dev libcairo2-dev \
     libssh2-1-dev libcurl4-openssl-dev \
-    curl less git make wget screen nano \
+    less git make wget nano \
+    software-properties-common python-software-properties \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -43,28 +44,25 @@ RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> /etc/apt/sour
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # set default CRAN repo and DL method
-RUN echo 'options(repos=c(CRAN = "https://cran.rstudio.com/"), download.file.method="wget")' >> /etc/R/Rprofile.site
+RUN echo 'options(repos=c(CRAN = "https://cran.rstudio.com/"), download.file.method="libcurl")' >> /etc/R/Rprofile.site
 
 # install R packages
-RUN sudo su - -c "R -e \"install.packages(c('devtools','shiny','rmarkdown','pacman'))\"" \
-  && sudo su - -c "R -e \"devtools::install_github('cole-brokamp/CB')\"" \
-  && sudo su - -c "R -e \"devtools::install_github('cole-brokamp/automagic')\"" \
-  && sudo su - -c "R -e \"devtools::install_github('hoxo-m/githubinstall')\"" \
-  && sudo su - -c "R -e \"devtools::install_github('hadley/tidyverse')\""
-
+RUN sudo su - -c "R -e \"install.packages(c('ghit','shiny','rmarkdown','tidyverse'))\"" \
+  && sudo su - -c "R -e \"ghit::install_github('cole-brokamp/CB')\"" \
+  && sudo su - -c "R -e \"ghit::install_github('cole-brokamp/automagic')\""
 # Download and install latest version of shiny server
 RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/VERSION -O "version.txt" && \
-    VERSION=$(cat version.txt)  && \
-    wget --no-verbose "https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
-    gdebi -n ss-latest.deb && \
-    rm -f version.txt ss-latest.deb && \
-    cp -R /usr/local/lib/R/site-library/shiny/examples/* /srv/shiny-server/
+   VERSION=$(cat version.txt)  && \
+   wget --no-verbose "https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/shiny-server-$VERSION-amd64.deb" -O ss-latest.deb && \
+   gdebi -n ss-latest.deb && \
+   rm -f version.txt ss-latest.deb && \
+   cp -R /usr/local/lib/R/site-library/shiny/examples/* /srv/shiny-server/
 
 ## install geo libraries and r packages
-RUN wget -O - https://raw.githubusercontent.com/cole-brokamp/dotfiles/master/install/install_geos_gdal_proj4_for_linux.sh | bash \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
+RUN add-apt-repository -y ppa:ubuntugis/ppa         
+RUN apt-get update && apt-get install -y gdal-bin \ 
+   && apt-get clean \                              
+   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN sudo su - -c "R -e \"install.packages(c('rgeos','rgdal'))\""
 
 # expose port to access app
