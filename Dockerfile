@@ -47,7 +47,7 @@ RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> /etc/apt/sour
 RUN echo 'options(repos=c(CRAN = "https://cran.rstudio.com/"), download.file.method="libcurl")' >> /etc/R/Rprofile.site
 
 # install R packages
-RUN sudo su - -c "R -e \"install.packages(c('ghit','shiny','rmarkdown','tidyverse'))\""
+RUN sudo su - -c "R -e \"install.packages(c('ghit','shiny','rmarkdown','tidyverse','rgeos','rgdal'))\""
 RUN sudo su - -c "R -e \"ghit::install_github('cole-brokamp/automagic')\""
 RUN sudo su - -c "R -e \"ghit::install_github('cole-brokamp/CB')\"" 
 
@@ -58,13 +58,6 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
    gdebi -n ss-latest.deb && \
    rm -f version.txt ss-latest.deb && \
    cp -R /usr/local/lib/R/site-library/shiny/examples/* /srv/shiny-server/
-
-## install geo libraries and r packages
-RUN add-apt-repository -y ppa:ubuntugis/ppa         
-RUN apt-get update && apt-get install gdal-bin -y --force-yes \ 
-   && apt-get clean \                              
-   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN sudo su - -c "R -e \"install.packages(c('rgeos','rgdal'))\""
 
 # expose port to access app
 EXPOSE 3838
