@@ -3,3 +3,7 @@ shiny-server.conf
 TODO
 *.Rhistory
 *.html
+
+hello_shiny/automagic.dependencies
+
+hello_shiny/Dockerfile
