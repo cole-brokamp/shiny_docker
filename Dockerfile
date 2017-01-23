@@ -47,9 +47,10 @@ RUN echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> /etc/apt/sour
 RUN echo 'options(repos=c(CRAN = "https://cran.rstudio.com/"), download.file.method="libcurl")' >> /etc/R/Rprofile.site
 
 # install R packages
-RUN sudo su - -c "R -e \"install.packages(c('ghit','shiny','rmarkdown','tidyverse'))\"" \
-  && sudo su - -c "R -e \"ghit::install_github('cole-brokamp/CB')\"" \
-  && sudo su - -c "R -e \"ghit::install_github('cole-brokamp/automagic')\""
+RUN sudo su - -c "R -e \"install.packages(c('ghit','shiny','rmarkdown','tidyverse'))\""
+RUN sudo su - -c "R -e \"ghit::install_github('cole-brokamp/automagic')\""
+RUN sudo su - -c "R -e \"ghit::install_github('cole-brokamp/CB')\"" 
+
 # Download and install latest version of shiny server
 RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubuntu-12.04/x86_64/VERSION -O "version.txt" && \
    VERSION=$(cat version.txt)  && \
@@ -60,7 +61,7 @@ RUN wget --no-verbose https://s3.amazonaws.com/rstudio-shiny-server-os-build/ubu
 
 ## install geo libraries and r packages
 RUN add-apt-repository -y ppa:ubuntugis/ppa         
-RUN apt-get update && apt-get install -y gdal-bin \ 
+RUN apt-get update && apt-get install gdal-bin -y --force-yes \ 
    && apt-get clean \                              
    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN sudo su - -c "R -e \"install.packages(c('rgeos','rgdal'))\""
