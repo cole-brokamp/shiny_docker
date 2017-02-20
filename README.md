@@ -1,5 +1,7 @@
 # shiny_docker
 
+### THIS SOFTWARE IS NO LONGER MAINTAINED AND HAS BEEN REPLACED WITH THE R PACKAGE "RIZE", AVAILABLE AT [https://github.com/cole-brokamp/rize](https://github.com/cole-brokamp/rize)
+
 [![](https://images.microbadger.com/badges/image/colebrokamp/shiny.svg)](https://microbadger.com/images/colebrokamp/shiny)
 [![](https://images.microbadger.com/badges/version/colebrokamp/shiny.svg)](https://hub.docker.com/r/colebrokamp/shiny/)
 
